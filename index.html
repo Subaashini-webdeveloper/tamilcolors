@@ -38,12 +38,29 @@
         const grid = document.getElementById('colorGrid');
 
         // NEW RELIABLE AUDIO FUNCTION
+
+
         function speakTamil(text) {
-            // This fetches the audio directly from Google's high-quality Tamil voice
-            const url = `https://translate.google.com/translate_tts?ie=UTF-8&tl=ta&client=tw-ob&q=${encodeURIComponent(text)}`;
-            const audio = new Audio(url);
-            audio.play();
-        }
+    // 1. Create the URL
+    const url = `https://translate.google.com/translate_tts?ie=UTF-8&tl=ta&client=tw-ob&q=${encodeURIComponent(text)}`;
+    
+    // 2. Create the Audio object
+    const audio = new Audio(url);
+    
+    // 3. Force the browser to treat it as a top-priority request
+    audio.crossOrigin = "anonymous"; 
+    
+    // 4. Play with an error catcher
+    const playPromise = audio.play();
+
+    if (playPromise !== undefined) {
+        playPromise.catch(error => {
+            console.log("GitHub block: User must interact with the page first.");
+            // Optional: Show a small message to your students
+            // alert("Please click anywhere on the page to enable sound!");
+        });
+    }
+}
 
         colors.forEach(item => {
             const card = document.createElement('div');
