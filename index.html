@@ -24,58 +24,53 @@
     <div class="grid" id="colorGrid"></div>
 
     <script>
-        const colors = [
-            { tamil: "சிவப்பு", english: "Red", hex: "#FF0000" },
-            { tamil: "பச்சை", english: "Green", hex: "#2ECC71" },
-            { tamil: "நீலம்", english: "Blue", hex: "#3498DB" },
-            { tamil: "மஞ்சள்", english: "Yellow", hex: "#F1C40F" },
-            { tamil: "கருப்பு", english: "Black", hex: "#2C3E50" },
-            { tamil: "வெள்ளை", english: "White", hex: "#FFFFFF" },
-            { tamil: "ஊதா", english: "Purple", hex: "#9B59B6" },
-            { tamil: "செம்மஞ்சள்", english: "Orange", hex: "#E67E22" }
-        ];
+    const colors = [
+        { tamil: "சிவப்பு", english: "Red", hex: "#FF0000" },
+        { tamil: "பச்சை", english: "Green", hex: "#2ECC71" },
+        { tamil: "நீலம்", english: "Blue", hex: "#3498DB" },
+        { tamil: "மஞ்சள்", english: "Yellow", hex: "#F1C40F" },
+        { tamil: "கருப்பு", english: "Black", hex: "#2C3E50" },
+        { tamil: "வெள்ளை", english: "White", hex: "#FFFFFF" },
+        { tamil: "ஊதா", english: "Purple", hex: "#9B59B6" },
+        { tamil: "செம்மஞ்சள்", english: "Orange", hex: "#E67E22" }
+    ];
 
-        const grid = document.getElementById('colorGrid');
+    const grid = document.getElementById('colorGrid');
 
-        // NEW RELIABLE AUDIO FUNCTION
+    // This function uses the BROWSER'S internal voice (No CORS errors!)
+    function speakTamil(text) {
+        window.speechSynthesis.cancel(); // Stop any current speech
+        
+        const msg = new SpeechSynthesisUtterance();
+        msg.text = text;
+        msg.lang = 'ta-IN';
+        msg.rate = 0.8;
 
+        // Force browser to find the Tamil voice
+        const voices = window.speechSynthesis.getVoices();
+        const tamilVoice = voices.find(v => v.lang.includes('ta'));
+        if (tamilVoice) msg.voice = tamilVoice;
 
-        function speakTamil(text) {
-    // 1. Create the URL
-    const url = `https://translate.google.com/translate_tts?ie=UTF-8&tl=ta&client=tw-ob&q=${encodeURIComponent(text)}`;
-    
-    // 2. Create the Audio object
-    const audio = new Audio(url);
-    
-    // 3. Force the browser to treat it as a top-priority request
-    audio.crossOrigin = "anonymous"; 
-    
-    // 4. Play with an error catcher
-    const playPromise = audio.play();
-
-    if (playPromise !== undefined) {
-        playPromise.catch(error => {
-            console.log("GitHub block: User must interact with the page first.");
-            // Optional: Show a small message to your students
-            // alert("Please click anywhere on the page to enable sound!");
-        });
+        window.speechSynthesis.speak(msg);
     }
-}
 
-        colors.forEach(item => {
-            const card = document.createElement('div');
-            card.className = 'card';
-            
-            // FIXED: Calling speakTamil instead of speak
-            card.onclick = () => speakTamil(item.tamil);
-            
-            card.innerHTML = `
-                <div class="color-box" style="background-color: ${item.hex}"></div>
-                <span class="tamil-text">${item.tamil} <span class="speaker-icon">🔊</span></span>
-                <span class="english-text">${item.english}</span>
-            `;
-            grid.appendChild(card);
-        });
-    </script>
+    // IMPORTANT: GitHub requires a "warm up" for voices
+    window.speechSynthesis.onvoiceschanged = () => {
+        console.log("Voices ready for GitHub");
+    };
+
+    colors.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.onclick = () => speakTamil(item.tamil);
+        
+        card.innerHTML = `
+            <div class="color-box" style="background-color: ${item.hex}"></div>
+            <span class="tamil-text">${item.tamil} <span class="speaker-icon">🔊</span></span>
+            <span class="english-text">${item.english}</span>
+        `;
+        grid.appendChild(card);
+    });
+</script>
 </body>
 </html>
